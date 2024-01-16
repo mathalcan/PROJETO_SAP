@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Consolis</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 20px;
+  }
+  #main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #links {
+    width: 400px;
+    height: 400px;
+    background-color: #f5f5f5;
+    padding: 10px;
+    border: 1px solid #ccc;
+    overflow-y: auto; /* Sistema de rolagem apenas na tabela de links */
+  }
+  #linkInput {
+    width: 100%;
+    height: 220px;
+    overflow-y: auto; /* Sistema de rolagem apenas na caixa de texto */
+    resize: none; /* Impede o redimensionamento da caixa de texto */
+  }
+  #linkTableContainer {
+    margin-left: 20px;
+    max-height: 400px;
+    overflow-y: auto; /* Sistema de rolagem na tabela de resultados */
+    width: 50%;
+    position: sticky;
+    top: 70px; /* Altura do cabeçalho e margem superior */
+  }
+  #linkTable {
+    border-collapse: collapse;
+    width: 100%;
+    background-color: #f5f5f5;
+  }
+  #linkTable th, #linkTable td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: left;
+  }
+  #downloadButton {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+  <h1>Consolis</h1>
+  <div id="main">
+    <div id="links">
+      <label for="linkInput">Adicionar link .vbs:</label>
+      <br>
+      <textarea id="linkInput" style="width: 100%; height: 220px;" placeholder="Insira os links aqui, um por linha"></textarea>
+      <br>
+      <button onclick="addLinks()">Adicionar</button>
+      <p>Total de links: <span id="totalLinks">0</span></p>
+    </div>
+    <div id="linkTableContainer">
+      <table id="linkTable">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Link</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+  <button id="downloadButton" onclick="downloadAll()">Baixar Todos</button>
+
+  <script>
+    const linkList = [];
+    const addedLinks = new Set();
+
+    function addLinks() {
+      const linkInput = document.getElementById("linkInput");
+      const links = linkInput.value.trim().split('\n');
+      for (const link of links) {
+        if (link.trim() !== "" && !addedLinks.has(link.trim())) {
+          linkList.push(link.trim());
+          addedLinks.add(link.trim());
+        }
+      }
+      linkInput.value = "";
+      updateLinkList();
+    }
+
+    function updateLinkList() {
+      const linkTableBody = document.querySelector("#linkTable tbody");
+      linkTableBody.innerHTML = "";
+      linkList.forEach((link, index) => {
+        const row = `<tr><td>${index + 1}</td><td>${link}</td></tr>`;
+        linkTableBody.innerHTML += row;
+      });
+      document.getElementById("totalLinks").textContent = linkList.length;
+    }
+
+    function downloadAll() {
+      linkList.forEach((link, index) => {
+        const a = document.createElement("a");
+        a.href = link;
+        a.download = link.substring(link.lastIndexOf('/') + 1);
+        a.target = "_blank";
+        a.click();
+      });
+    }
+  </script>
+</body>
+</html>
